@@ -15,7 +15,7 @@ NUM_EPOCHS = 100
 BATCH_SIZE = 100
 DATA_FOLDER = os.path.dirname(os.path.realpath(__file__))+"/../data/"
 SAVED_MODELS_FOLDER = DATA_FOLDER+"saved_models/"
-DATASET_FOLDER = DATA_FOLDER+"ToyPickPlaceTAMP_maze_world_toy_gym/motion_data/movetoplace"
+DATASET_FOLDER = DATA_FOLDER+"/dataset/ToyPickPlaceTAMP_maze_world_toy_gym/motion_data/movetoplace"
 TRAIN_TEST_RATE = 0.8
 CHECKPOINT_AFTER = 50
 
@@ -49,6 +49,7 @@ criterion = nn.MSELoss()
 optimizer = optim.SGD(motionnet.parameters(), lr=2*10e-4, weight_decay=1e-4)
 
 start = time.time()
+start_loop_time = time.time()
 for epoch in range(NUM_EPOCHS):
     running_loss = 0.0
     for i, return_value in enumerate(data_loader):
@@ -70,7 +71,9 @@ for epoch in range(NUM_EPOCHS):
         # print statistics
         running_loss += loss.item()
         if i % CHECKPOINT_AFTER == 0:    # print every 5 mini-batches
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / CHECKPOINT_AFTER:.3f}')
+            period = time.time() - start_loop_time
+            start_loop_time = time.time()
+            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / CHECKPOINT_AFTER:.3f}. Time per {CHECKPOINT_AFTER} batches: {period}')
             writer.add_scalar("movetoplace/train_lost", running_loss / CHECKPOINT_AFTER, epoch*len(data_loader)+i)
             torch.save(motionnet.state_dict(), SAVED_MODELS_FOLDER+"movetoplace.pth")
             running_loss = 0.0    

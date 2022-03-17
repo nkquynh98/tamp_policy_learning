@@ -14,7 +14,7 @@ NUM_EPOCHS = 100
 BATCH_SIZE = 100
 DATA_FOLDER = os.path.dirname(os.path.realpath(__file__))+"/../data/"
 SAVED_MODELS_FOLDER = DATA_FOLDER+"saved_models/"
-DATASET_FOLDER = DATA_FOLDER+"ToyPickPlaceTAMP_maze_world_toy_gym/motion_data/movetopick"
+DATASET_FOLDER = DATA_FOLDER+"/dataset/ToyPickPlaceTAMP_maze_world_toy_gym/motion_data/movetopick"
 TRAIN_TEST_RATE = 0.8
 CHECKPOINT_AFTER = 500
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -46,7 +46,8 @@ criterion = nn.MSELoss()
 #Using SGD optimizer, learning rate 10^-3, and L2 regulization 4*10^-4
 optimizer = optim.SGD(motionnet.parameters(), lr=2*10e-4, weight_decay=1e-4)
 
-start = time.time()
+start_time = time.time()
+start_loop_time = time.time()
 for epoch in range(NUM_EPOCHS):
     running_loss = 0.0
     for i, return_value in enumerate(data_loader):
@@ -68,7 +69,9 @@ for epoch in range(NUM_EPOCHS):
         # print statistics
         running_loss += loss.item()
         if i % CHECKPOINT_AFTER == 0:    # print every 5 mini-batches
-            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / CHECKPOINT_AFTER:.3f}')
+            period = time.time() - start_loop_time
+            start_loop_time = time.time()
+            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / CHECKPOINT_AFTER:.3f}. Time per {CHECKPOINT_AFTER} bathces: {period}')
             writer.add_scalar("movetopick/train_lost", running_loss / CHECKPOINT_AFTER, epoch*len(data_loader)+i)
             torch.save(motionnet.state_dict(), SAVED_MODELS_FOLDER+"movetopick.pth")
             running_loss = 0.0       
