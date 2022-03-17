@@ -130,4 +130,4 @@ dmypy.json
 
 
 # User configuration
-/data/dataset/
+/data/dataset/*
