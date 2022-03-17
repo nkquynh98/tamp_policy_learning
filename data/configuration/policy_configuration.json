@@ -1,0 +1,24 @@
+{
+    "env_name" : "ToyPickPlace",
+    "saved_model_folder": "/home/nkquynh/gil_ws/tamp_policy_learning/data/saved_models/",
+    "tasknet":
+        {
+            "type": "ToyTaskNet",
+            "file_name": "tasknet.pth"
+        },
+    "motionnet":
+    {
+        "movetopick":
+        {
+            "type": "Toy_movetopick",
+            "file_name": "movetopick.pth"
+        },
+        "movetoplace":
+        {
+            "type": "Toy_movetoplace",
+            "file_name": "movetoplace.pth"
+        }
+        
+    }
+    
+}
